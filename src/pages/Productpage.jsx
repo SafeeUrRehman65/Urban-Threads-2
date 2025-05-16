@@ -2,6 +2,7 @@ import Navbar from "../components/Navbar/navbar.jsx"
 import Footer from "../components/Footer/footer.jsx"
 import Product from "../components/Product/product"
 import { Productpanel, FakePanel } from "../components/productpanel/productpanel.jsx"
+import "../components/Filterpanel/filter.js"
 
 // importing external functions
 import { Clicked, DisplayCateg } from "../components/Filterpanel/filter.js"
@@ -34,13 +35,7 @@ import { DisplayFilter } from "../components/Filterpanel/filter.js"
 
 // importing for time being
 import "../App.css"
-import Cookies from "cookies"
-import { data } from "autoprefixer"
 import { useState, useEffect, useRef } from "react"
-import { Form } from "react-router-dom"
-import { rating } from "@material-tailwind/react"
-
-
 
 
 export default function ProductPage() {
@@ -78,7 +73,8 @@ export default function ProductPage() {
         localStorage.setItem('arrayofcheck', countCheck[0].checked)
         // alert(localStorage.getItem('arrayofcheck'))
         function processData(data) {
-            const Categories = data.documents
+            console.log(data)
+            const Categories = data
             Categories.forEach(cat => {
                 // console.log(cat.name)
                 subCategories.push(cat.sub_categories)
@@ -417,8 +413,8 @@ export default function ProductPage() {
                             </div>
                             <div className="clear-apply mx-2 flex justify-evenly">
                                 <button className="text-yellow-400 w-[45%] h-8 border-yellow-300 border rounded-2xl" onClick={uncheckAll}>Clear Filter</button>
-                                <button className="apply-filter a3 text-white rounded-2xl bg-yellow-300 h-8 w-[45%]" >Apply</button>
-                                {/* onClick={ApplyFilters} */}
+                                <button className="apply-filter a3 text-white rounded-2xl bg-yellow-300 h-8 w-[45%]" onClick={ApplyFilters}>Apply</button>
+
                             </div>
 
                         </div>

@@ -10,9 +10,11 @@ import Orderstatus from "../../components/OrderStatus/orderstatus.jsx";
 import OrderLabels from "../../components/OrderLabels/orderlabels.jsx";
 import OrderDetails from "../../components/OrderDetails/orderdetails.jsx";
 import Order from "../../components/Order/order.jsx";
+import { Navigate } from "react-router-dom";
 
 
 export default function OrderPage() {
+    
     return (
         <div className="">
             <div className="hidden 3xl:block">

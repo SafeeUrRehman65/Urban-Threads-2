@@ -30,7 +30,7 @@ export default function SliderBox() {
 
     useEffect(() => {
         function processData(data) {
-            const Categories = data.documents
+            const Categories = data
             Categories.forEach(cat => {
                 // console.log(cat.name)
                 subCategories.push(cat.sub_categories)

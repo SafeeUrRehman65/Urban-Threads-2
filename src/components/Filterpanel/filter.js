@@ -70,8 +70,9 @@ export function ApplyFilters() {
     } else {
         minprice = min[0].value
         maxprice = max[0].value
+        console.log("ratings", rating[0].value)
         rating = Number(rating[0].value)
-        window.location.reload()
+        // window.location.reload()
     }
 
 }

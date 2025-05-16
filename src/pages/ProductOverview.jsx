@@ -457,7 +457,7 @@ function ProductOverview() {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
-                setProductDetails(data['documents'][0]);
+                setProductDetails(data[0]);
             } catch (error) {
                 console.error('Error fetching product details:', error.message);
             }

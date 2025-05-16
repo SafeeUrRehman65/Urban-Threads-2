@@ -97,28 +97,113 @@
 // });
 
 
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+// const uri = "mongodb+srv://administrator:safee-123@cluster0.uofanou.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+// async function run() {
+//   const client = new MongoClient(uri, {
+//     serverApi: {
+//       version: ServerApiVersion.v1,
+//       strict: true,
+//       deprecationErrors: true,
+//     },
+//   });
+
+//   try {
+//     await client.connect();
+//     console.log("Successfully connected to MongoDB!");
+//   } catch (err) {
+//     console.error("Connection failed!");
+//     console.error("Error Name:", err.name);
+//     console.error("Error Message:", err.message);
+//     if (err.code) console.error("Error Code:", err.code);
+//     if (err.stack) console.error("Stack Trace:", err.stack);
+//     if (err.reason) console.error("Reason:", err.reason); // Sometimes used in driver errors
+//   } finally {
+//     await client.close();
+//   }
+// }
+
+// run();
+
+
+const express = require('express');
+const app = express();
+const port = 3000;
+const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://administrator:safee-123%40123@cluster0.uofanou.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-async function run() {
-  const client = new MongoClient(uri, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    },
-  });
+// MongoDB connection setup
+const uri = "mongodb+srv://administrator:safee-123@cluster0.uofanou.mongodb.net/UrbanThreadsDB?retryWrites=true&w=majority&appName=Cluster0";
 
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+// Middleware
+app.use(cors());
+app.use(express.static('build'));
+
+// Connect to MongoDB when server starts
+let db;
+async function connectToMongoDB() {
   try {
     await client.connect();
+    db = client.db();
     console.log("Successfully connected to MongoDB!");
   } catch (err) {
-    console.error("Connection failed:", err.message);
-  } finally {
-    await client.close();
+    console.error("Connection failed!");
+    console.error("Error Name:", err.name);
+    console.error("Error Message:", err.message);
+    if (err.code) console.error("Error Code:", err.code);
+    process.exit(1); // Exit if can't connect to DB
   }
 }
 
-run();
+// For Product Overview Page
+app.get('/api/products/:category?/:subCategory?/:productUUID?', async (req, res) => {
+  try {
+    const { category, subCategory, productUUID } = req.params;
+    const filters = {};
 
+    if (category) filters['category'] = category.toLowerCase();
+    if (subCategory) filters['sub_category'] = subCategory.toLowerCase();
+    if (productUUID) filters['unique_identifier'] = productUUID.toUpperCase();
 
+    const products = await db.collection('Products').find(filters).toArray();
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// For products Page (men/boys filter)
+app.get('/data/product/fetch', async (req, res) => {
+  try {
+    const products = await db.collection('ProductsH')
+      .find({ name: { $in: ['men', 'boys'] } })
+      .toArray();
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching men/boys products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Start server after DB connection
+connectToMongoDB().then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
+  });
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  await client.close();
+  process.exit();
+});
